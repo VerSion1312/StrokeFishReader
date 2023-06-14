@@ -38,8 +38,16 @@
             this.rcm_fontColor = new System.Windows.Forms.ToolStripMenuItem();
             this.rcm_opacity = new System.Windows.Forms.ToolStripMenuItem();
             this.tb_opacity = new System.Windows.Forms.ToolStripTextBox();
+            this.rcm_fontSet = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.rcm_resetStyle = new System.Windows.Forms.ToolStripMenuItem();
+            this.快捷键设置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.下一页ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tb_nextPage = new System.Windows.Forms.ToolStripTextBox();
+            this.上一页ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tb_lastPage = new System.Windows.Forms.ToolStripTextBox();
+            this.隐藏界面ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tb_hideForm = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.rcm_opeFile = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -57,6 +65,7 @@
             this.rcm_fixPosition,
             this.rcm_keepTop,
             this.样式设置ToolStripMenuItem,
+            this.快捷键设置ToolStripMenuItem,
             this.toolStripSeparator2,
             this.rcm_opeFile,
             this.toolStripSeparator1,
@@ -64,7 +73,7 @@
             this.toolStripSeparator3,
             this.rcm_exit});
             this.rightClickMenu.Name = "rightClickMenu";
-            this.rightClickMenu.Size = new System.Drawing.Size(181, 176);
+            this.rightClickMenu.Size = new System.Drawing.Size(181, 198);
             // 
             // rcm_fixPosition
             // 
@@ -86,6 +95,7 @@
             this.rcm_backColor,
             this.rcm_fontColor,
             this.rcm_opacity,
+            this.rcm_fontSet,
             this.toolStripSeparator4,
             this.rcm_resetStyle});
             this.样式设置ToolStripMenuItem.Name = "样式设置ToolStripMenuItem";
@@ -123,6 +133,13 @@
             this.tb_opacity.Text = "100";
             this.tb_opacity.ToolTipText = "取值范围10~100(回车键确认)";
             // 
+            // rcm_fontSet
+            // 
+            this.rcm_fontSet.Name = "rcm_fontSet";
+            this.rcm_fontSet.Size = new System.Drawing.Size(148, 22);
+            this.rcm_fontSet.Text = "字体设置";
+            this.rcm_fontSet.Click += new System.EventHandler(this.rcm_fontSet_Click);
+            // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
@@ -134,6 +151,62 @@
             this.rcm_resetStyle.Size = new System.Drawing.Size(148, 22);
             this.rcm_resetStyle.Text = "恢复初始样式";
             this.rcm_resetStyle.Click += new System.EventHandler(this.rcm_resetStyle_Click);
+            // 
+            // 快捷键设置ToolStripMenuItem
+            // 
+            this.快捷键设置ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.下一页ToolStripMenuItem,
+            this.上一页ToolStripMenuItem,
+            this.隐藏界面ToolStripMenuItem});
+            this.快捷键设置ToolStripMenuItem.Name = "快捷键设置ToolStripMenuItem";
+            this.快捷键设置ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.快捷键设置ToolStripMenuItem.Text = "快捷键设置";
+            // 
+            // 下一页ToolStripMenuItem
+            // 
+            this.下一页ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tb_nextPage});
+            this.下一页ToolStripMenuItem.Name = "下一页ToolStripMenuItem";
+            this.下一页ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.下一页ToolStripMenuItem.Text = "下一页";
+            // 
+            // tb_nextPage
+            // 
+            this.tb_nextPage.AutoToolTip = true;
+            this.tb_nextPage.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.tb_nextPage.Name = "tb_nextPage";
+            this.tb_nextPage.Size = new System.Drawing.Size(100, 23);
+            this.tb_nextPage.Text = "W";
+            this.tb_nextPage.ToolTipText = "按下需要绑定的按键";
+            this.tb_nextPage.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tb_nextPage_KeyDown);
+            // 
+            // 上一页ToolStripMenuItem
+            // 
+            this.上一页ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tb_lastPage});
+            this.上一页ToolStripMenuItem.Name = "上一页ToolStripMenuItem";
+            this.上一页ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.上一页ToolStripMenuItem.Text = "上一页";
+            // 
+            // tb_lastPage
+            // 
+            this.tb_lastPage.Name = "tb_lastPage";
+            this.tb_lastPage.Size = new System.Drawing.Size(100, 23);
+            this.tb_lastPage.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tb_lastPage_KeyDown);
+            // 
+            // 隐藏界面ToolStripMenuItem
+            // 
+            this.隐藏界面ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tb_hideForm});
+            this.隐藏界面ToolStripMenuItem.Name = "隐藏界面ToolStripMenuItem";
+            this.隐藏界面ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.隐藏界面ToolStripMenuItem.Text = "隐藏界面";
+            // 
+            // tb_hideForm
+            // 
+            this.tb_hideForm.Name = "tb_hideForm";
+            this.tb_hideForm.Size = new System.Drawing.Size(100, 23);
+            this.tb_hideForm.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tb_hideForm_KeyDown);
             // 
             // toolStripSeparator2
             // 
@@ -177,6 +250,7 @@
             this.ni_logo.Icon = ((System.Drawing.Icon)(resources.GetObject("ni_logo.Icon")));
             this.ni_logo.Text = "工作效率提升插件";
             this.ni_logo.Visible = true;
+            this.ni_logo.Click += new System.EventHandler(this.ni_logo_DoubleClick);
             this.ni_logo.DoubleClick += new System.EventHandler(this.ni_logo_DoubleClick);
             // 
             // lb_text
@@ -231,5 +305,13 @@
         private ToolStripSeparator toolStripSeparator3;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripMenuItem rcm_resetStyle;
+        private ToolStripMenuItem rcm_fontSet;
+        private ToolStripMenuItem 快捷键设置ToolStripMenuItem;
+        private ToolStripMenuItem 下一页ToolStripMenuItem;
+        private ToolStripTextBox tb_nextPage;
+        private ToolStripMenuItem 上一页ToolStripMenuItem;
+        private ToolStripTextBox tb_lastPage;
+        private ToolStripMenuItem 隐藏界面ToolStripMenuItem;
+        private ToolStripTextBox tb_hideForm;
     }
 }
