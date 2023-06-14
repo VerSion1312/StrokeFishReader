@@ -28,18 +28,19 @@ namespace CovertReader
             else
             {
                 #region 读取用户数据并渲染
-                using (StreamReader settingFile = new StreamReader("./userDatas.vdf"))
-                {
-                    var settingLine = settingFile.ReadToEnd();
-                    if (string.IsNullOrEmpty(settingLine))
-                    {
-                        return;
-                    }
-                    settings = JsonSerializer.Deserialize<UserSettings>(settingLine) ?? new UserSettings();
-                }
                 //根据用户历史设置窗体，若设置异常则重置为初始状态并重启
                 try
                 {
+                    using (StreamReader settingFile = new StreamReader("./userDatas.vdf"))
+                    {
+                        var settingLine = settingFile.ReadToEnd();
+                        if (string.IsNullOrEmpty(settingLine))
+                        {
+                            return;
+                        }
+                        settings = JsonSerializer.Deserialize<UserSettings>(settingLine) ?? new UserSettings();
+                    }
+
                     //背景色
                     BackColor = ColorTranslator.FromHtml(settings.BackgroundColor);
                     //字体颜色
@@ -63,8 +64,10 @@ namespace CovertReader
                     }
                     //窗体宽度
                     Width = settings.UserWidth;
+                    lb_text.Width = Width;
                     //窗体高度
                     Height = settings.UserHeight;
+                    lb_text.Height = Height;
                     //窗体位置
                     Top = settings.TopLocation;
                     Left = settings.LeftLocation;
@@ -76,6 +79,12 @@ namespace CovertReader
                     rcm_fixPosition.Checked = settings.FixedFlag;
                     ControlBox = !settings.FixedFlag;
                     FormBorderStyle = rcm_fixPosition.Checked ? FormBorderStyle.None : FormBorderStyle.Sizable;
+                    //字体
+                    lb_text.Font = new Font(settings.FontName, settings.FontSize);
+                    //快捷键
+                    tb_nextPage.Text = Keys.GetName((Keys)settings.NextPageKey);
+                    tb_lastPage.Text = Keys.GetName((Keys)settings.LastPageKey);
+                    tb_hideForm.Text = Keys.GetName((Keys)settings.HideFormKey);
                 }
                 catch
                 {
@@ -88,7 +97,16 @@ namespace CovertReader
                     settings.LeftLocation = 0;
                     settings.TopMostFlag = false;
                     settings.FixedFlag = false;
+                    settings.FontName = "Microsoft YaHei UI";
+                    settings.FontSize = 9;
+                    settings.LastPageKey = (char)Keys.Q;
+                    settings.NextPageKey = (char)Keys.W;
+                    settings.HideFormKey = (char)Keys.Oemtilde;
                     MessageBox.Show("根据用户配置渲染窗口异常！请重新启动程序");
+                    if (!File.Exists("./userDatas.vdf"))
+                    {
+                        File.Delete("./userDatas.vdf");
+                    }
                     Application.Exit();
                 }
 
@@ -177,15 +195,18 @@ namespace CovertReader
         //调整尺寸
         private void MainForm_SizeChanged(object sender, EventArgs e)
         {
-            lb_text.Width = Width;
-            lb_text.Height = Height;
-            currentShowLength = CalcLabelContentLength();
-            settings.UserWidth = Width;
-            settings.UserHeight = Height;
-
-            if (!string.IsNullOrEmpty(textContent))
+            if (WindowState == FormWindowState.Normal)
             {
-                lb_text.Text = textContent.Substring(settings.ReadPosition, currentShowLength);
+                lb_text.Width = Width;
+                lb_text.Height = Height;
+                currentShowLength = CalcLabelContentLength();
+                settings.UserWidth = Width;
+                settings.UserHeight = Height;
+
+                if (!string.IsNullOrEmpty(textContent))
+                {
+                    lb_text.Text = textContent.Substring(settings.ReadPosition, currentShowLength);
+                }
             }
         }
 
@@ -243,32 +264,34 @@ namespace CovertReader
         //按钮按下事件
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
+            if ((char)e.KeyCode == settings.HideFormKey)
+            {
+                this.Hide();
+                return;
+            }
             if (!string.IsNullOrEmpty(textContent))
             {
-                switch (e.KeyCode)
+                //下一页
+                if ((new char[] { (char)Keys.Right, (char)Keys.Down, (char)Keys.PageDown, settings.NextPageKey }).Contains((char)e.KeyCode))
                 {
-                    case Keys.Right:
-                    case Keys.Down:
-                    case Keys.PageDown:
-                        settings.ReadPosition += currentShowLength;
-                        if (settings.ReadPosition > textContent.Length || (settings.ReadPosition + currentShowLength) > textContent.Length)
-                        {
-                            settings.ReadPosition = textContent.Length - currentShowLength;
-                        }
-                        lb_text.Text = textContent.Substring(settings.ReadPosition, currentShowLength);
-                        break;
-                    case Keys.Left:
-                    case Keys.Up:
-                    case Keys.PageUp:
-                        settings.ReadPosition -= currentShowLength;
-                        if (settings.ReadPosition < 0)
-                        {
-                            settings.ReadPosition = 0;
-                        }
-                        lb_text.Text = textContent.Substring(settings.ReadPosition, currentShowLength);
-                        break;
-                    default:
-                        break;
+                    settings.ReadPosition += currentShowLength;
+                    if (settings.ReadPosition > textContent.Length || (settings.ReadPosition + currentShowLength) > textContent.Length)
+                    {
+                        settings.ReadPosition = textContent.Length - currentShowLength;
+                    }
+                    lb_text.Text = textContent.Substring(settings.ReadPosition, currentShowLength);
+                    return;
+                }
+                //上一页
+                if ((new char[] { (char)Keys.Left, (char)Keys.Up, (char)Keys.PageUp, settings.LastPageKey }).Contains((char)e.KeyCode))
+                {
+                    settings.ReadPosition -= currentShowLength;
+                    if (settings.ReadPosition < 0)
+                    {
+                        settings.ReadPosition = 0;
+                    }
+                    lb_text.Text = textContent.Substring(settings.ReadPosition, currentShowLength);
+                    return;
                 }
             }
         }
@@ -289,6 +312,7 @@ namespace CovertReader
             settings.LeftLocation = Left;
         }
 
+        //背景颜色设置
         private void rcm_backColor_Click(object sender, EventArgs e)
         {
             var colorDialog = new ColorDialog();
@@ -299,6 +323,7 @@ namespace CovertReader
             }
         }
 
+        //文字颜色设置
         private void rcm_fontColor_Click(object sender, EventArgs e)
         {
             var colorDialog = new ColorDialog();
@@ -309,6 +334,7 @@ namespace CovertReader
             }
         }
 
+        //样式重置
         private void rcm_resetStyle_Click(object sender, EventArgs e)
         {
             settings.BackgroundColor = "#38393c";
@@ -317,6 +343,12 @@ namespace CovertReader
             BackColor = ColorTranslator.FromHtml(settings.BackgroundColor);
             lb_text.ForeColor = ColorTranslator.FromHtml(settings.FontColor);
             Opacity = 1;
+            settings.FontName = "Microsoft YaHei UI";
+            settings.FontSize = 9;
+            lb_text.Font = new Font(settings.FontName, settings.FontSize);
+            //修改字体后重新计算可显示字数
+            currentShowLength = CalcLabelContentLength();
+            lb_text.Text = textContent.Substring(settings.ReadPosition, currentShowLength);
         }
 
         private void rcm_aboutVerSion_Click(object sender, EventArgs e)
@@ -330,6 +362,50 @@ namespace CovertReader
                     UseShellExecute = true
                 });
             }
+        }
+
+        //字体设置
+        private void rcm_fontSet_Click(object sender, EventArgs e)
+        {
+            FontDialog fontDialog = new FontDialog();
+            if (fontDialog.ShowDialog() == DialogResult.OK)
+            {
+                // 获取用户选择的字体
+                Font selectedFont = fontDialog.Font;
+                // 设置字体
+                lb_text.Font = selectedFont;
+                settings.FontName = selectedFont.Name;
+                settings.FontSize = selectedFont.Size;
+                //修改字体后重新计算可显示字数
+                currentShowLength = CalcLabelContentLength();
+                lb_text.Text = textContent.Substring(settings.ReadPosition, currentShowLength);
+            }
+
+        }
+
+        //绑定快捷键
+        private void tb_nextPage_KeyDown(object sender, KeyEventArgs e)
+        {
+            tb_nextPage.Text = e.KeyCode.ToString();
+            settings.NextPageKey = (char)e.KeyCode;
+            //阻止输入
+            e.SuppressKeyPress = true;
+        }
+
+        private void tb_lastPage_KeyDown(object sender, KeyEventArgs e)
+        {
+            tb_lastPage.Text = e.KeyCode.ToString();
+            settings.LastPageKey = (char)e.KeyCode;
+            //阻止输入
+            e.SuppressKeyPress = true;
+        }
+
+        private void tb_hideForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            tb_hideForm.Text = e.KeyCode.ToString();
+            settings.HideFormKey = (char)e.KeyCode;
+            //阻止输入
+            e.SuppressKeyPress = true;
         }
     }
 
@@ -346,6 +422,10 @@ namespace CovertReader
         public int LeftLocation { get; set; } = 0;
         public bool TopMostFlag { get; set; } = false;
         public bool FixedFlag { get; set; } = false;
-
+        public string FontName { get; set; } = "Microsoft YaHei UI";
+        public float FontSize { get; set; } = 9;
+        public char LastPageKey { get; set; } = (char)Keys.Q;
+        public char NextPageKey { get; set; } = (char)Keys.W;
+        public char HideFormKey { get; set; } = (char)Keys.Oemtilde;
     }
 }
